@@ -141,3 +141,6 @@ if [[ "${DOCKER_USERNS_REMAP:-false}" == "false" ]]; then
   sudo /usr/bin/fix-buildkite-agent-builds-permissions "${AGENT_DIR}" "${ORG_DIR}" "${PIPELINE_DIR}"
   echo
 fi
+export NVM_DIR="/var/lib/buildkite-agent/.nvm"
+source /var/lib/buildkite-agent/.nvm/nvm.sh
+export DOCKER_CONFIG=/var/lib/buildkite-agent/.docker

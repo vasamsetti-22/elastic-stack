@@ -153,3 +153,4 @@ while read -r registry; do
   echo "Authenticating Docker with Amazon ECR in account: $registry"
   aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin "$registry"
 done <<< "$AWS_ECR_LOGIN_REGISTRY_IDS"
+

@@ -28,6 +28,20 @@ if [ "${BUILDKITE_DOCKER_EXPERIMENTAL:-false}" = "true" ]; then
   cat <<<"$(jq '.experimental="enabled"' "${DOCKER_CONFIG}/config.json")" >"${DOCKER_CONFIG}/config.json"
 fi
 
+if [ "${BUILDKITE_DOCKER_EXPERIMENTAL:-false}" = "true" ]; then
+  if [ ! -f "${DOCKER_CONFIG}/config.json" ]; then
+    echo "{}" >"${DOCKER_CONFIG}/config.json"
+  fi
+
+  # Authenticate Docker with Amazon ECR
+  AWS_ECR_LOGIN_REGISTRY_IDS="903336691686.dkr.ecr.ap-southeast-2.amazonaws.com 300780199842.dkr.ecr.ap-southeast-2.amazonaws.com 618158805015.dkr.ecr.ap-southeast-2.amazonaws.com"
+  
+  while read -r registry; do
+    echo "Authenticating Docker with Amazon ECR in account: $registry"
+    aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin "$registry"
+  done <<< "$AWS_ECR_LOGIN_REGISTRY_IDS"
+fi
+
 echo "~~~ :llama: Setting up elastic stack environment ($BUILDKITE_STACK_VERSION)"
 
 echo "Checking docker"
@@ -147,6 +161,8 @@ fi
 export NVM_DIR="/var/lib/buildkite-agent/.nvm"
 source /var/lib/buildkite-agent/.nvm/nvm.sh
 export DOCKER_CONFIG=/var/lib/buildkite-agent/.docker
+
+export AWS_ECR_LOGIN_REGISTRY_IDS="903336691686.dkr.ecr.ap-southeast-2.amazonaws.com 300780199842.dkr.ecr.ap-southeast-2.amazonaws.com 618158805015.dkr.ecr.ap-southeast-2.amazonaws.com"
 
 # Authenticate Docker with Amazon ECR
 while read -r registry; do

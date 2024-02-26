@@ -91,7 +91,7 @@ if [[ "${BUILDKITE_ECR_POLICY:-}" != "none" && "${ECR_PLUGIN_ENABLED:-}" == "1" 
   export BUILDKITE_PLUGIN_ECR_RETRIES=3
 
   # Set the AWS_ECR_LOGIN_REGISTRY_IDS variable with your ECR registry IDs
-  export AWS_ECR_LOGIN_REGISTRY_IDS="903336691686.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2 300780199842.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2 903336691686.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2"
+  export AWS_ECR_LOGIN_REGISTRY_IDS="903336691686.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2 300780199842.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2 618158805015.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2"
 
   # map AWS_ECR_LOGIN_REGISTRY_IDS into the plugin list format
   if [[ -n "${AWS_ECR_LOGIN_REGISTRY_IDS:-}" ]]; then

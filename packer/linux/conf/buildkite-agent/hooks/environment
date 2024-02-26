@@ -149,8 +149,7 @@ source /var/lib/buildkite-agent/.nvm/nvm.sh
 export DOCKER_CONFIG=/var/lib/buildkite-agent/.docker
 
 # Authenticate Docker with Amazon ECR
-echo "$AWS_ECR_LOGIN_REGISTRY_IDS" | \
-  xargs -n1 -I {} sh -c 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin {}'
-
-# Optionally, you can add an echo statement to provide some output
-echo "Docker authenticated with all ECR registries."
+while read -r registry; do
+  echo "Authenticating Docker with Amazon ECR in account: $registry"
+  aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin "$registry"
+done <<< "$AWS_ECR_LOGIN_REGISTRY_IDS"

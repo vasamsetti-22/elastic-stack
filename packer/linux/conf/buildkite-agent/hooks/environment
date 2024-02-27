@@ -28,20 +28,6 @@ if [ "${BUILDKITE_DOCKER_EXPERIMENTAL:-false}" = "true" ]; then
   cat <<<"$(jq '.experimental="enabled"' "${DOCKER_CONFIG}/config.json")" >"${DOCKER_CONFIG}/config.json"
 fi
 
-if [ "${BUILDKITE_DOCKER_EXPERIMENTAL:-false}" = "true" ]; then
-  if [ ! -f "${DOCKER_CONFIG}/config.json" ]; then
-    echo "{}" >"${DOCKER_CONFIG}/config.json"
-  fi
-
-  # Authenticate Docker with Amazon ECR
-  AWS_ECR_LOGIN_REGISTRY_IDS="903336691686.dkr.ecr.ap-southeast-2.amazonaws.com 300780199842.dkr.ecr.ap-southeast-2.amazonaws.com 618158805015.dkr.ecr.ap-southeast-2.amazonaws.com"
-  
-  while read -r registry; do
-    echo "Authenticating Docker with Amazon ECR in account: $registry"
-    aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin "$registry"
-  done <<< "$AWS_ECR_LOGIN_REGISTRY_IDS"
-fi
-
 echo "~~~ :llama: Setting up elastic stack environment ($BUILDKITE_STACK_VERSION)"
 
 echo "Checking docker"
@@ -104,9 +90,6 @@ if [[ "${BUILDKITE_ECR_POLICY:-}" != "none" && "${ECR_PLUGIN_ENABLED:-}" == "1" 
   export BUILDKITE_PLUGIN_ECR_LOGIN=1
   export BUILDKITE_PLUGIN_ECR_RETRIES=3
 
-  # Set the AWS_ECR_LOGIN_REGISTRY_IDS variable with your ECR registry IDs
-  export AWS_ECR_LOGIN_REGISTRY_IDS="903336691686.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2 300780199842.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2 618158805015.dkr.ecr.ap-southeast-2.amazonaws.com:ap-southeast-2"
-
   # map AWS_ECR_LOGIN_REGISTRY_IDS into the plugin list format
   if [[ -n "${AWS_ECR_LOGIN_REGISTRY_IDS:-}" ]]; then
     export BUILDKITE_PLUGIN_ECR_ACCOUNT_IDS_0="${AWS_ECR_LOGIN_REGISTRY_IDS}"
@@ -161,12 +144,3 @@ fi
 export NVM_DIR="/var/lib/buildkite-agent/.nvm"
 source /var/lib/buildkite-agent/.nvm/nvm.sh
 export DOCKER_CONFIG=/var/lib/buildkite-agent/.docker
-
-export AWS_ECR_LOGIN_REGISTRY_IDS="903336691686.dkr.ecr.ap-southeast-2.amazonaws.com 300780199842.dkr.ecr.ap-southeast-2.amazonaws.com 618158805015.dkr.ecr.ap-southeast-2.amazonaws.com"
-
-# Authenticate Docker with Amazon ECR
-while read -r registry; do
-  echo "Authenticating Docker with Amazon ECR in account: $registry"
-  aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin "$registry"
-done <<< "$AWS_ECR_LOGIN_REGISTRY_IDS"
-
